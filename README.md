@@ -42,7 +42,7 @@ All pages share one seeded universe (`clinic/data.py`, baked in `data/`). The ad
 
 ## All topics covered
 
-The full catalog lives **on the site**: home (tabs), sidebar **All Topics** (example + interview card), and **Interview questions** (live demos, flashcards, MCQ). Source: `clinic/topics.py`, `clinic/interview.py`.
+The full catalog lives **on the site**: home (module tabs with **example + result**), sidebar **All Topics → By module** (every topic, not a truncated table), and **Interview questions**. Source: `clinic/topics.py`, `clinic/worked.py`.
 
 Each topic is the same shape as the .NET interview map: **Topic · Concept · Example · Where**, plus a question you should answer out loud.
 

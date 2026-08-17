@@ -38,8 +38,10 @@ TOPICS: list[dict[str, object]] = [
         "Scalar types",
         "int, float, str, bool, None — missing lab is None, not 0",
         "Python → Types",
-        """age, spo2, condition, admit = 67, 88.0, "pneumonia", True
-pending_troponin = None   # missing ≠ 0.0""",
+        """age, spo2, condition, admit = 67, 88.0, "Pneumonia", True
+pending_troponin = None
+print(type(age), type(spo2), type(condition), type(admit), type(pending_troponin))
+# int float str bool NoneType — missing lab is None, not 0.0""",
         "Why is a missing troponin None (or NaN) instead of 0?",
         "0 is a measured value (troponin not elevated). None/NaN means the assay was not run. Imputing 0 trains the model that 'no test' looks like 'normal', which is leakage of the ordering decision.",
         [
@@ -350,8 +352,9 @@ assay_cost.shape  # (14,)""",
         "matmul / @",
         "panel_cost = protocol @ assay_cost; pull = counts @ protocol",
         "NumPy labs · Capstone reagents",
-        """panel_cost = protocol @ assay_cost     # (8,14) @ (14,) -> (8,)
-pull = condition_counts @ protocol     # (14,) assays to draw tonight""",
+        """panel_cost = protocol @ assay_cost     # (8,14) @ (14,) -> (8,) dollars per condition
+pull = condition_counts @ protocol     # (n_conditions,) @ (8,14) -> (14,) assays tonight
+# * would be elementwise and would NOT sum the panel""",
         "When do you use @ vs * ?",
         "`*` is elementwise (Hadamard). `@` is matrix multiply / dot. `protocol * assay_cost` broadcasts a cost onto each indicated assay; `protocol @ assay_cost` sums those into one dollar figure per condition. Say both; know which one you meant.",
         [
@@ -647,7 +650,8 @@ enc.groupby("hour")["arrival"].value_counts().unstack().plot.bar()""",
         "Heatmap",
         "admit rate site × hour",
         "EDA & charts",
-        """pd.crosstab(enc["site"], enc["hour"], values=enc["admit"], aggfunc="mean")""",
+        """rate = pd.crosstab(enc["site"], enc["hour"], values=enc["admit"], aggfunc="mean")
+n = pd.crosstab(enc["site"], enc["hour"])  # pair every rate with its count""",
         "What can a heatmap hide?",
         "Sample size. A 100% admit cell with n=2 looks like a pattern. Always pair a rate heatmap with a count heatmap, or annotate n.",
         [
@@ -678,7 +682,8 @@ px.scatter(daily, x="encounters", y="admit_rate", color="site")""",
         "Correlation",
         "Pearson on site-day numerics; Simpson warning",
         "EDA & charts",
-        """feat[["encounters", "enc_lag7", "flu_wave", "admit_rate"]].corr()""",
+        """feat[["encounters", "enc_lag7", "flu_wave", "admit_rate"]].corr()
+# lag-7 vs encounters is signal; same-day admit_rate vs encounters is leakage""",
         "Does high correlation mean we should drop a feature?",
         "Not automatically. Lag-7 will correlate with today — that is the signal. Drop when two features are the same information and unstable (admit_rate vs encounters on the same day is leakage, not just collinearity).",
         [
@@ -1024,7 +1029,9 @@ ColumnTransformer([("num", num, num_cols), ("cat", OneHotEncoder(handle_unknown=
         "K-means",
         "k groups on scaled patient features; k is a choice",
         "Clusters",
-        """KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X_scaled)""",
+        """labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X_scaled)
+# k=4 on scaled [age, log_visits, admits, recency, comorbid, avg_esi]
+# output: segment id per patient — not an ICD code""",
         "Does k-means produce diagnoses?",
         "No. It partitions scaled space into k Voronoi cells. You name the clusters in English (older high-util, …). k is a product choice, not a statistical discovery of 'true diseases'.",
         [
@@ -1039,7 +1046,9 @@ ColumnTransformer([("num", num, num_cols), ("cat", OneHotEncoder(handle_unknown=
         "Scaling",
         "StandardScaler so age does not drown comorbid",
         "Clusters",
-        """Xz = StandardScaler().fit_transform(X)  # k-means uses Euclidean distance""",
+        """Xz = StandardScaler().fit_transform(X)
+# age ~ 70 would dominate comorbid in {0,1,2,3,4} under Euclidean k-means
+print(X.std(axis=0), Xz.std(axis=0))""",
         "Why scale before k-means?",
         "k-means is Euclidean. Age in years (~70) dominates comorbid count (~0–4). StandardScaler puts features on comparable axes. Same reason Ridge coefficients need scaling to be comparable.",
         [
@@ -1054,7 +1063,9 @@ ColumnTransformer([("num", num, num_cols), ("cat", OneHotEncoder(handle_unknown=
         "PCA",
         "2D view of segments (visualization, not a diagnosis)",
         "Clusters",
-        """xy = PCA(n_components=2, random_state=0).fit_transform(Xz)""",
+        """pca = PCA(n_components=2, random_state=0)
+xy = pca.fit_transform(Xz)
+# scatter pc1 vs pc2 colored by segment — visualization only""",
         "Is PCA a clustering algorithm?",
         "No. It rotates to variance axes for visualization (or as a preprocessor). Clusters in a 2-D PCA plot can look cleaner than they are in 6-D. Do not cluster on 2 PCs just because the scatter looks nice unless you meant to.",
         [
@@ -1069,7 +1080,8 @@ ColumnTransformer([("num", num, num_cols), ("cat", OneHotEncoder(handle_unknown=
         "Silhouette",
         "tightness hint; name the cluster in English",
         "Clusters",
-        """silhouette_score(Xz, labels)  # higher is tighter/separated; not a business metric""",
+        """sil = silhouette_score(Xz, labels)
+# 0.25 vs 0.45 is a hint. If care management cannot name the cluster, k is wrong.""",
         "High silhouette — ship it?",
         "No. Silhouette is a geometric hint. If care management cannot name the cluster, k is wrong. Also: silhouette prefers convex blobs; it will not save a bad feature set.",
         [
@@ -1084,7 +1096,12 @@ ColumnTransformer([("num", num, num_cols), ("cat", OneHotEncoder(handle_unknown=
         "Phenotypes",
         "unsupervised segments (older high-util, …)",
         "Clusters · Capstone",
-        """profile = pat.groupby("segment").agg(n="count", age="mean", visits="mean", comorbid="mean")""",
+        """profile = (
+    pat.groupby("segment")
+    .agg(n=("patient_id", "count"), age=("age", "mean"),
+         visits=("visits", "mean"), comorbid=("comorbid", "mean"))
+)
+# name each row in English: "older high-util", "young low-touch", …""",
         "How do you validate a phenotype?",
         "Stability (bootstrap / time split: does the same story reappear?), actionability (a panel or outreach), and no use of the admit label in the features if you will later predict admit — that would leak the target into the segment.",
         [
@@ -1267,7 +1284,11 @@ chart.pop("gold_admit")
         "Census board",
         "forecast vs actual vs lag-7; season what-if",
         "Capstone",
-        """# tonight's board: yhat vs actual vs naive lag-7, by site""",
+        """# last night vs model vs last week (same site)
+board = daily[daily.date == daily.date.max()][["site", "encounters"]]
+board["yhat"] = pipe.predict(X_tonight)
+board["naive_lag7"] = feat.loc[feat.date == feat.date.max(), "enc_lag7"].values
+# Harbor losing while Downtown wins → site shift, not a generic ML win""",
         "What does beating lag-7 on the board prove?",
         "That the model is adding something the charge nurse does not already know. If it loses on Harbor only, you have a site-shift problem, not a generic ML win.",
         [
@@ -1298,7 +1319,13 @@ cover = inventory[site] / pull    # hours/days of cover""",
         "Admit desk",
         "score a live ticket (ESI, SpO2, arrival, …)",
         "Capstone",
-        """pipe.predict_proba(pd.DataFrame([ticket]))[0, 1]""",
+        """ticket = pd.DataFrame([{
+    "age": 67, "esi_n": 2, "hour": 19, "spo2": 88, "hr": 112,
+    "temp_c": 38.4, "sbp": 98, "wbc": 14.2, "lactate_f": 3.1,
+    "troponin_f": np.nan, "rush": 1, "site": "Downtown",
+    "arrival": "ambulance", "season": "flu_wave",
+}])
+p_admit = float(pipe.predict_proba(ticket)[0, 1])  # same columns as training""",
         "What must the live ticket match?",
         "Training columns and dtypes: esi_n, rush, lactate_f, site categories. Train/serving skew (new arrival code, missing rush) is the usual production break. handle_unknown='ignore' is a seatbelt, not a feature.",
         [
@@ -1313,7 +1340,9 @@ cover = inventory[site] / pull    # hours/days of cover""",
         "Run agent",
         "same loop on tonight’s board",
         "Capstone",
-        """state, trace, eval_rows = run_agent(clinic, admit_pipe, encounter_id)""",
+        """state, trace, eval_rows = run_agent(clinic, admit_pipe, encounter_id)
+# trace: get_chart → flag_labs → score_admit → nearest_condition → retrieve_protocol → stop
+# eval_rows: guess vs gold_label_condition (gold was never in the tools)""",
         "What is the capstone testing that Module 07 did not?",
         "Integration: census + reagents + admit scores + the tool loop on the same universe. Module 07 is a model. Capstone is the product workflow. Same as the .NET pizza app: topics map to live calls, not slides.",
         [
