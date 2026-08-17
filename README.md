@@ -38,6 +38,32 @@ Open [http://127.0.0.1:8501](http://127.0.0.1:8501).
 
 All pages share one seeded universe (`clinic/data.py`, baked in `data/`). The admit `Pipeline` the classifier page fits is the same shape of object the agent calls as `score_admit`.
 
+## Python topics covered
+
+General Python on this site (Module 01 tabs, then reused in NumPy, Pandas, sklearn, and the agent). Not a beginner language course — each topic is run on encounter / atlas tables.
+
+| Topic | What you actually do | Where |
+|---|---|---|
+| Scalar types | `int`, `float`, `str`, `bool`, `None` from one encounter | Python → Types |
+| Collections | `list`, `tuple`, `set`, `dict`; set algebra `∩ ∪ −`; tuple as an immutable key | Python → Collections |
+| Strings & numbers | f-strings, slicing, slugs, `//` vs `/`, `%`, `round` | Python → Strings & numbers |
+| Control flow | `if` / `elif` / `else`, `for`, `while`, `in` | Python → Control flow |
+| Functions | defaults, `*args`, `**kwargs`, `return`, `lambda` as a sort key | Python → Functions |
+| Comprehensions | list/dict comps, `zip`, `enumerate`, unpacking `first, *rest, last` | Python → Comprehensions |
+| OOP | `class`, `@dataclass`, `field(default_factory=…)`, `@property`, methods, `__len__` | Python → OOP |
+| Exceptions | `raise`, `try` / `except ValueError`, explicit fallbacks | Python → Exceptions & files |
+| Files & JSON | `json.dumps` / `loads`, `pathlib.Path`, CSV download | Python → Exceptions & files |
+| Datetime | `datetime`, `timedelta`, weekday, ISO; Pandas `.dt` | Python → Datetime |
+| collections | `Counter`, `defaultdict`, `namedtuple`, `deque(maxlen=…)` | Python → Stdlib |
+| Generators | `yield`, one-pass streams, `itertools.islice` | Python → Generators & itertools |
+| itertools | `product` (OneHot-style crosses), `groupby` | Python → Generators & itertools |
+| Typing | `Literal`, `Callable`, annotations (not runtime checks) | Python → Typing & decorators |
+| Decorators | `@wraps`, call counters — same idea as timing / tool wrappers | Python → Typing & decorators |
+| Context managers | `with`, `@contextmanager` (isolation / resources) | Python → Typing & decorators |
+| Agent as Python | `for` loop + dict state + callables as tools | Agent workflow |
+
+Mutable default args (`def f(xs=[])`) are called out as a pitfall; dataclasses use `default_factory` instead.
+
 ## Agent workflow
 
 ```
