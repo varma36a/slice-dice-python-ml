@@ -8,6 +8,7 @@ import sys
 import streamlit as st
 
 from clinic.data import Clinic, build_clinic
+from clinic.store import baked_clinic
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -116,7 +117,10 @@ def card(title: str, body: str) -> None:
     st.markdown(f'<div class="card"><h4>{title}</h4><div>{body}</div></div>', unsafe_allow_html=True)
 
 
-@st.cache_resource(show_spinner="Opening clinic — generating encounters…")
+@st.cache_resource(show_spinner="Loading clinic…")
 def load_clinic(days: int = 28) -> Clinic:
-    """cache_resource: Clinic is a large custom object; cache_data pickle can fail on Cloud."""
+    """Prefer pre-baked parquet (instant Cloud boot). Generate only if data/ is missing."""
+    baked = baked_clinic()
+    if baked is not None:
+        return baked
     return build_clinic(days=days)
