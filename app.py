@@ -1,7 +1,6 @@
-import pandas as pd
 import streamlit as st
 
-from clinic.topics import TOPICS
+from clinic.topics import CATALOG_COLS, catalog_frame
 from clinic.ui import card, header, inject, load_clinic, warn
 
 inject()
@@ -93,12 +92,13 @@ st.caption(f"Lab window {meta['start']} → {meta['end']} · seed {meta['seed']}
 st.markdown("---")
 st.markdown("### All topics covered on this site")
 st.markdown(
-    "Python, NumPy, Pandas, EDA, features, sklearn, and the agent. Full catalog: sidebar **All Topics**."
+    "Each topic has a **clinic example** and an **interview question**. "
+    "Full cards: sidebar **All Topics**. Drill: **Interview questions**."
 )
-all_df = pd.DataFrame(TOPICS)
+all_df = catalog_frame()
 tabs = st.tabs(["All"] + list(dict.fromkeys(all_df["area"].tolist())))
 with tabs[0]:
-    st.dataframe(all_df, hide_index=True, width="stretch", height=480)
+    st.dataframe(all_df[CATALOG_COLS], hide_index=True, width="stretch", height=480)
 for i, area in enumerate(dict.fromkeys(all_df["area"].tolist()), start=1):
     with tabs[i]:
-        st.dataframe(all_df[all_df["area"] == area], hide_index=True, width="stretch")
+        st.dataframe(all_df.loc[all_df["area"] == area, CATALOG_COLS], hide_index=True, width="stretch")

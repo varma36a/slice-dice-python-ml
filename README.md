@@ -24,8 +24,9 @@ Open [http://127.0.0.1:8501](http://127.0.0.1:8501).
 
 | Page | What you can do after it |
 |---|---|
-| Home | Clinic universe + **all topics** (tabbed catalog) |
-| All Topics | Every topic on the site, filterable by area |
+| Home | Clinic universe + topic catalog with **examples** |
+| All Topics | Topic / concept / example / interview card (Dotnet-InterviewQuestions layout) |
+| Interview questions | Live clinic demos, flashcards, multiple choice |
 | Python for ML | Types through typing, each with encounter tables |
 | NumPy labs | Lab-mean matrix, reference-range masks, protocol @ cost |
 | Pandas chart | groupby/transform, merge comorbidities, missing lactate |
@@ -41,7 +42,9 @@ All pages share one seeded universe (`clinic/data.py`, baked in `data/`). The ad
 
 ## All topics covered
 
-The full catalog lives **on the site**: home (tabs) and sidebar **All Topics**. Source of truth: `clinic/topics.py`.
+The full catalog lives **on the site**: home (tabs), sidebar **All Topics** (example + interview card), and **Interview questions** (live demos, flashcards, MCQ). Source: `clinic/topics.py`, `clinic/interview.py`.
+
+Each topic is the same shape as the .NET interview map: **Topic · Concept · Example · Where**, plus a question you should answer out loud.
 
 | Area | Topics |
 |---|---|

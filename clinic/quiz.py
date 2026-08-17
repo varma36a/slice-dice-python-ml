@@ -14,3 +14,27 @@ def ask(qid: str, question: str, options: list[str], answer: str, explain: str) 
         st.success(explain)
     else:
         st.error(f"Not that one. {explain}")
+
+
+def flashcard(qid: str, question: str, answer: str, example: str | None = None, where: str | None = None) -> None:
+    """Interview card: question first, reveal answer + clinic example (Dotnet-InterviewQuestions style)."""
+    with st.expander(question, expanded=False):
+        if where:
+            st.caption(str(where))
+        st.markdown(answer)
+        if example:
+            st.code(example, language="python")
+
+
+def drill(
+    qid: str,
+    question: str,
+    options: list[str],
+    answer: str,
+    explain: str,
+    example: str | None = None,
+) -> None:
+    ask(qid, question, options, answer, explain)
+    if example:
+        with st.expander("Clinic example", expanded=False):
+            st.code(example, language="python")
