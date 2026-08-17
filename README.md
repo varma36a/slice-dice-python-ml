@@ -2,6 +2,9 @@
 
 End-to-end **Python for machine learning** lab, taught as a five-store pizzeria.
 
+**Live app:** [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/)  
+**Repo:** [github.com/varma36a/slice-dice-python-ml](https://github.com/varma36a/slice-dice-python-ml)
+
 Aimed at engineers who already write production code. No `hello world`. NumPy, Pandas, EDA, leakage-safe features, and sklearn — then one capstone that actually runs the shop.
 
 ## Run locally
@@ -34,12 +37,7 @@ All pages share one seeded generator (`pizza/data.py`). Change a recipe, and the
 
 ## Deploy (Streamlit Community Cloud)
 
-Repo: [github.com/varma36a/slice-dice-python-ml](https://github.com/varma36a/slice-dice-python-ml)
-
-One-click deploy (sign in with GitHub if prompted):  
-[share.streamlit.io/deploy](https://share.streamlit.io/deploy?repository=varma36a/slice-dice-python-ml&branch=main&mainModule=app.py)
-
-Main file: `app.py`. Python 3.11–3.13. The app stays up independently of this laptop and updates on every `git push`.
+Hosted at [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/) from `main` / `app.py`. The app stays up independently of this laptop and updates on every `git push`.
 
 ## Design notes
 
