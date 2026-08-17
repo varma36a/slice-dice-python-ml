@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from clinic.topics import TOPICS
 from clinic.ui import card, header, inject, load_clinic, warn
 
 inject()
@@ -90,32 +91,14 @@ st.markdown(
 st.caption(f"Lab window {meta['start']} → {meta['end']} · seed {meta['seed']}")
 
 st.markdown("---")
-st.markdown("### Python topics covered")
+st.markdown("### All topics covered on this site")
 st.markdown(
-    "General Python used on this site (worked on encounter tables, then reused in NumPy / Pandas / the agent)."
+    "Python, NumPy, Pandas, EDA, features, sklearn, and the agent. Full catalog: sidebar **All Topics**."
 )
-st.dataframe(
-    pd.DataFrame(
-        [
-            {"topic": "Scalar types", "what": "int, float, str, bool, None", "where": "Python → Types"},
-            {"topic": "Collections", "what": "list, tuple, set, dict; ∩ ∪ − ; tuple as a key", "where": "Python → Collections"},
-            {"topic": "Strings & numbers", "what": "f-strings, slicing, slug, // vs /, %, round", "where": "Python → Strings & numbers"},
-            {"topic": "Control flow", "what": "if / elif / else, for, while, membership in", "where": "Python → Control flow"},
-            {"topic": "Functions", "what": "defaults, *args, **kwargs, return, lambda sort key", "where": "Python → Functions"},
-            {"topic": "Comprehensions", "what": "list/dict comps, zip, enumerate, unpacking *rest", "where": "Python → Comprehensions"},
-            {"topic": "OOP", "what": "class, @dataclass, field(default_factory), @property, methods, __len__", "where": "Python → OOP"},
-            {"topic": "Exceptions", "what": "raise, try / except ValueError, explicit fallbacks", "where": "Python → Exceptions & files"},
-            {"topic": "Files & JSON", "what": "json.dumps / loads, pathlib.Path, CSV export", "where": "Python → Exceptions & files"},
-            {"topic": "Datetime", "what": "datetime, timedelta, weekday, ISO format; Pandas .dt", "where": "Python → Datetime"},
-            {"topic": "collections", "what": "Counter, defaultdict, namedtuple, deque(maxlen)", "where": "Python → Stdlib"},
-            {"topic": "Generators", "what": "yield, one-pass streams, itertools.islice", "where": "Python → Generators & itertools"},
-            {"topic": "itertools", "what": "product (feature crosses), groupby", "where": "Python → Generators & itertools"},
-            {"topic": "Typing", "what": "Literal, Callable, return annotations (not runtime checks)", "where": "Python → Typing & decorators"},
-            {"topic": "Decorators", "what": "@wraps, call counters; pattern for @timed / tools", "where": "Python → Typing & decorators"},
-            {"topic": "Context managers", "what": "with, @contextmanager (isolation / resources)", "where": "Python → Typing & decorators"},
-            {"topic": "Agent as Python", "what": "loop + dict state + callables as tools", "where": "Agent workflow"},
-        ]
-    ),
-    hide_index=True,
-    width="stretch",
-)
+all_df = pd.DataFrame(TOPICS)
+tabs = st.tabs(["All"] + list(dict.fromkeys(all_df["area"].tolist())))
+with tabs[0]:
+    st.dataframe(all_df, hide_index=True, width="stretch", height=480)
+for i, area in enumerate(dict.fromkeys(all_df["area"].tolist()), start=1):
+    with tabs[i]:
+        st.dataframe(all_df[all_df["area"] == area], hide_index=True, width="stretch")
