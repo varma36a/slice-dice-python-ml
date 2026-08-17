@@ -410,7 +410,7 @@ def _hourly_lambda(hour: int, site: str, is_weekend: bool, flu: bool) -> float:
         site_k *= 1.28
     if hour < 8 or hour > 22:
         return 0.12 * site_k
-    return float(base * site_k * 2.6)
+    return float(base * site_k * 1.7)
 
 
 def build_clinic(days: int = 56, seed: int = SEED) -> Clinic:

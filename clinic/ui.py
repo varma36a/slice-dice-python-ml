@@ -116,7 +116,7 @@ def card(title: str, body: str) -> None:
     st.markdown(f'<div class="card"><h4>{title}</h4><div>{body}</div></div>', unsafe_allow_html=True)
 
 
-@st.cache_resource(show_spinner="Opening clinic — generating 8 weeks of encounters…")
-def load_clinic(days: int = 42) -> Clinic:
+@st.cache_resource(show_spinner="Opening clinic — generating encounters…")
+def load_clinic(days: int = 28) -> Clinic:
     """cache_resource: Clinic is a large custom object; cache_data pickle can fail on Cloud."""
     return build_clinic(days=days)
