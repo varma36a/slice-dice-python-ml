@@ -2,7 +2,7 @@
 
 End-to-end **Python for machine learning + agent workflow**, taught as a five-site urgent care.
 
-**Live app:** [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/)  
+**Live app:** [https://agenticdoctorv2.streamlit.app/](https://agenticdoctorv2.streamlit.app/)  
 **Repo:** [github.com/varma36a/slice-dice-python-ml](https://github.com/varma36a/slice-dice-python-ml)
 
 Synthetic educational data. **Not medical advice. Not a diagnostic product. Not for clinical use.**
