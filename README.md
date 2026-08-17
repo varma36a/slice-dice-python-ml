@@ -1,11 +1,13 @@
-# Slice & Dice — Python for ML
+# Agentic Doctor — Python for ML
 
-End-to-end **Python for machine learning** lab, taught as a five-store pizzeria.
+End-to-end **Python for machine learning + agent workflow**, taught as a five-site urgent care.
 
 **Live app:** [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/)  
 **Repo:** [github.com/varma36a/slice-dice-python-ml](https://github.com/varma36a/slice-dice-python-ml)
 
-Aimed at engineers who already write production code. No `hello world`. NumPy, Pandas, EDA, leakage-safe features, and sklearn — then one capstone that actually runs the shop.
+Synthetic educational data. **Not medical advice. Not a diagnostic product. Not for clinical use.**
+
+Aimed at engineers who already write production code. NumPy, Pandas, EDA, leakage-safe features, sklearn, then a diagnostic **agent** that calls those models as tools.
 
 ## Run locally
 
@@ -22,26 +24,29 @@ Open [http://127.0.0.1:8501](http://127.0.0.1:8501).
 
 | Page | What you can do after it |
 |---|---|
-| Home | See the shop universe (orders, stores, menu) |
-| Python for ML | Records, counters, generators, itertools crosses |
-| NumPy kitchen | Recipe matrix, broadcasting, masks, views vs copies |
-| Pandas ledger | groupby/transform, merge, missing delivery times, rolling |
-| EDA & charts | Find rush hour, rain, Campus-weekend — then encode them |
-| Feature engineering | Time split vs random split vs illegal same-day revenue |
-| Regression | Beat lag-7 naive demand |
-| Classification | Late SLA, threshold as an ops budget |
-| Clusters & pipelines | RFM segments, `Pipeline` + `TimeSeriesSplit` |
-| Capstone | Friday-night board: forecast, restock, late risk, guests |
+| Home | See the clinic universe (encounters, sites, atlas) |
+| Python for ML | Types through typing, each with encounter tables |
+| NumPy labs | Lab-mean matrix, reference-range masks, protocol @ cost |
+| Pandas chart | groupby/transform, merge comorbidities, missing lactate |
+| EDA & charts | Flu wave, hypoxia, ESI — then encode them |
+| Feature engineering | Time split vs random split vs illegal same-day admit rate |
+| Regression | Beat lag-7 naive census |
+| Classification | Admit risk; threshold as a bed budget |
+| Clusters & pipelines | Phenotypes, `Pipeline` + `TimeSeriesSplit` |
+| Agent workflow | Tools, planner, trace: chart → labs → model → protocol → stop |
+| Capstone | Triage board: forecast, reagents, admit desk, run the agent |
 
-All pages share one seeded generator (`pizza/data.py`). Change a recipe, and the commissary math and the models still agree.
+All pages share one seeded generator (`clinic/data.py`). The admit Pipeline the classifier page fits is the same shape of object the agent calls as `score_admit`.
 
-## Deploy (Streamlit Community Cloud)
+## Agent workflow (the point of the rewrite)
 
-Hosted at [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/) from `main` / `app.py`. The app stays up independently of this laptop and updates on every `git push`.
+```
+plan(state) → tool → observation → update(state) → stop
+tools: get_chart | flag_labs | score_admit | nearest_condition | retrieve_protocol
+```
 
-## Design notes
+No LLM is required to learn the architecture. Swap `plan()` for a model that emits `{tool, args}` JSON later if you want.
 
-- **Time-based splits** for demand and late-delivery (no shuffled Fridays).
-- **Pipelines** so scalers never see the test night.
-- **Naive lag-7** is the baseline a GM already has in their head.
-- Inventory decisions are `counts @ recipes` — if you can shape that, sklearn is easy.
+## Deploy
+
+Hosted at [https://agenticdoctor.streamlit.app/](https://agenticdoctor.streamlit.app/) from `main` / `app.py`. Updates on every `git push`.

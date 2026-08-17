@@ -1,21 +1,25 @@
 import streamlit as st
 
-from pizza.ui import card, header, inject, load_shop
+from clinic.ui import card, header, inject, load_clinic, warn
 
 inject()
-shop = load_shop()
-meta = shop.meta
+clinic = load_clinic()
+meta = clinic.meta
 
 header(
     "Course home · 11-year engineer track",
-    "Slice & Dice: Python for ML",
-    "One pizzeria. Every tool you actually need before (and beside) the models: NumPy, Pandas, EDA, features, sklearn.",
+    "Agentic Doctor: Python for ML",
+    "One urgent-care network. NumPy, Pandas, EDA, leakage-safe features, sklearn — then a diagnostic agent that calls those models as tools.",
+)
+
+warn(
+    "Every number in this app is synthetic. This is a software/ML lab, not a diagnostic product and not medical advice."
 )
 
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("Orders in the lab", f"{meta['n_orders']:,}")
-c2.metric("Stores", len(shop.stores))
-c3.metric("Menu items", len(shop.pizza_names))
+c1.metric("Encounters", f"{meta['n_encounters']:,}")
+c2.metric("Sites", len(clinic.sites))
+c3.metric("Condition atlas", len(clinic.condition_names))
 c4.metric("Window", f"{meta['days']} days")
 
 st.markdown("### How this is taught")
@@ -24,51 +28,52 @@ with left:
     st.markdown(
         """
 You already write production software. This course does **not** reteach `if`/`for`.
-It rebuilds the **ML working set** around one shop:
+It rebuilds the **ML + agent working set** around one clinic:
 
-1. **Python** — types, collections, functions, OOP, errors/files, datetime, stdlib, generators — all on the shop tables.
-2. **NumPy** — recipes, inventory, broadcasting, views vs copies, vectorized COGS.
-3. **Pandas** — the order ledger: groupby, merge, missing data, time, pivots.
-4. **EDA** — the plots that change a modeling decision.
+1. **Python** — types, collections, functions, OOP, files, datetime, stdlib — on encounter tables.
+2. **NumPy** — lab-mean matrix, reference-range masks, protocol @ assay cost.
+3. **Pandas** — the chart: groupby, merge patients, missing lactate/troponin, rolling census.
+4. **EDA** — flu waves, hypoxia, ESI — features you can see.
 5. **Features** — lags, leakage, time splits (the stuff that silently ruins models).
-6. **sklearn** — regression, classification, clustering, pipelines, metrics.
-7. **Capstone** — Friday-night command center: demand, stock, late-risk, segments.
+6. **sklearn** — wait regression, admit classification, phenotype clustering, pipelines.
+7. **Agent workflow** — tools, a planner, a trace: chart → labs → model → protocol → stop.
+8. **Capstone** — triage board: census forecast, reagent pull, admit risk, run the agent.
         """
     )
 with right:
     card(
         "The scenario",
-        """<b>Slice & Dice</b> is a five-store pizzeria (Downtown, Airport, Campus, Harbor, Suburb).
-        Eight pies. Fourteen ingredients. Delivery SLAs, loyalty tiers, weather.
-        Every array and DataFrame in the app is generated from one seeded universe — so a NumPy inventory
-        lesson and a RandomForest late-delivery model are talking about the <i>same</i> shop.""",
+        """<b>Northshore Urgent Care</b> is five sites (Downtown, Airport, Campus, Harbor, Suburb).
+        Eight conditions. Fourteen biomarkers. ESI, arrival mode, flu waves.
+        Every array and DataFrame is generated from one seeded universe — so a NumPy z-score
+        lesson and a RandomForest admit model and the agent are talking about the <i>same</i> patients.""",
     )
 
 st.markdown("### Course map")
-
 modules = [
-    ("01 · Python for ML", "pages/01_Python_for_ML.py", "Types → collections → functions → OOP → files → datetime → stdlib, each with shop tables."),
-    ("02 · NumPy kitchen", "pages/02_NumPy_Kitchen.py", "Recipe matrix @ costs, stock masks, broadcasting sizes."),
-    ("03 · Pandas ledger", "pages/03_Pandas_Ledger.py", "Groupby, merge, missing delivery times, rolling demand."),
-    ("04 · EDA & charts", "pages/04_EDA_and_Charts.py", "What the shop looks like before you fit anything."),
-    ("05 · Feature engineering", "pages/05_Feature_Engineering.py", "Lags, rush flags, leakage vs time split."),
-    ("06 · Regression", "pages/06_Regression_Demand.py", "Predict store-day tickets. Residuals. Importance."),
-    ("07 · Classification", "pages/07_Classification_Late.py", "Will this delivery blow the 40-minute SLA?"),
-    ("08 · Clusters & pipelines", "pages/08_Clusters_and_Pipelines.py", "RFM segments + ColumnTransformer."),
-    ("09 · Capstone", "pages/09_Capstone_Command_Center.py", "Run the shop: forecast, restock, late risk."),
+    ("01 · Python for ML", "Types → collections → functions → OOP → files → datetime → stdlib, each with encounter tables."),
+    ("02 · NumPy labs", "Lab-mean matrix, broadcasting vs reference ranges, protocol cost, reagent stock."),
+    ("03 · Pandas chart", "Groupby, merge comorbidities, missing labs, rolling census."),
+    ("04 · EDA & charts", "What the floor looks like before you fit anything."),
+    ("05 · Feature engineering", "Time split vs random split vs illegal same-day admit rate."),
+    ("06 · Regression", "Site-day census. Beat lag-7 naive."),
+    ("07 · Classification", "Will this encounter admit? Threshold as a bed budget."),
+    ("08 · Clusters & pipelines", "Patient phenotypes + ColumnTransformer + TimeSeriesSplit."),
+    ("09 · Agent workflow", "Tools, planner, trace — ML is a tool, not the product."),
+    ("10 · Capstone", "Triage command center: forecast, reagents, admit risk, run the agent."),
 ]
-
-for title, _path, blurb in modules:
+for title, blurb in modules:
     st.markdown(f"**{title}** — {blurb}")
 
 st.markdown("---")
 st.markdown("### Mental model (keep this)")
 st.code(
-    """orders:     pandas  — messy, labeled, joins, time   (what happened)
-recipes:    numpy   — dense, same dtype, matmul      (physics of a pie)
-features:   pandas→numpy — leakage-safe, split first (what the model may see)
-model:      sklearn Pipeline — preprocess + estimator (what you ship)
-decision:   stock / labor / SLA / promo              (why the shop cares)
+    """encounters: pandas  — messy, labeled, joins, time     (what happened)
+labs:       numpy   — dense, reference ranges, matmul (physics of a panel)
+features:   pandas→numpy — leakage-safe, split first  (what the model may see)
+model:      sklearn Pipeline — preprocess + estimator (a tool)
+agent:      plan → tool → observe → stop              (the workflow)
+decision:   triage / next test / escalate             (why the clinic cares)
 """,
     language="text",
 )
@@ -76,10 +81,9 @@ decision:   stock / labor / SLA / promo              (why the shop cares)
 st.markdown("### How to use it")
 st.markdown(
     """
-- Work top to bottom once. Then use **Capstone** as the integration test.
-- Every page has a **pizza lab** (widgets) and a **check** (one sharp question).
-- Copy the patterns, not the story. The same recipe matrix becomes a user-item matrix on Monday.
+- Work top to bottom once. **Agent** is the point of the rewrite; **Capstone** is the integration test.
+- Every page has a **lab** (widgets) and a **check**.
+- Copy the patterns: protocol matrix → user-item matrix; admit model → any binary risk; agent tools → any workflow.
 """
 )
-
 st.caption(f"Lab window {meta['start']} → {meta['end']} · seed {meta['seed']}")
