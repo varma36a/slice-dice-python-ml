@@ -27,7 +27,7 @@ Drill mode (flashcards / multiple choice) is **Interview questions** in the side
 
 results = cached_worked(int(clinic.meta.get("seed", 0)), int(clinic.meta.get("n_encounters", 0)))
 
-area_opts = ["All"] + areas()
+area_opts = areas() + ["All"]
 pick = st.selectbox("Area", area_opts)
 pool = TOPICS if pick == "All" else [t for t in TOPICS if t["area"] == pick]
 st.caption(f"{len(pool)} topics with examples" + ("" if pick == "All" else f" in {pick}"))

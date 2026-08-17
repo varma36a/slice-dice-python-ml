@@ -8,14 +8,12 @@ import pandas as pd
 import streamlit as st
 
 from clinic.quiz import flashcard
-from clinic.worked import worked_results
+from clinic.worked import load_worked
 
 
-@st.cache_data(show_spinner="Running every topic example on this clinic…")
+@st.cache_data(show_spinner="Loading topic examples…")
 def cached_worked(seed: int, n_enc: int):
-    from clinic.ui import load_clinic
-
-    return worked_results(load_clinic())
+    return load_worked()
 
 
 def topic_example_card(

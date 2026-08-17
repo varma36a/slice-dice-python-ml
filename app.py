@@ -1,7 +1,6 @@
 import streamlit as st
 
-from clinic.cards import cached_worked, topic_example_card
-from clinic.topics import CATALOG_COLS, TOPICS, catalog_frame
+from clinic.topics import CATALOG_COLS, catalog_frame
 from clinic.ui import card, header, inject, load_clinic, warn
 
 inject()
@@ -93,24 +92,8 @@ st.caption(f"Lab window {meta['start']} → {meta['end']} · seed {meta['seed']}
 st.markdown("---")
 st.markdown("### All topics covered on this site")
 st.markdown(
-    "Every module tab is **all topics in that module with the example and the result on this clinic**. "
-    "Same cards live under sidebar **All Topics → By module**. Drill: **Interview questions**."
+    "Index below. **Full example + result for every topic:** sidebar **All Topics → By module**. "
+    "Interview drill: **Interview questions**."
 )
 all_df = catalog_frame()
-area_names = list(dict.fromkeys(all_df["area"].tolist()))
-results = cached_worked(int(meta.get("seed", 0)), int(meta.get("n_encounters", 0)))
-tabs = st.tabs(["Index"] + area_names)
-with tabs[0]:
-    st.dataframe(all_df[CATALOG_COLS], hide_index=True, width="stretch", height=420)
-for i, area in enumerate(area_names, start=1):
-    with tabs[i]:
-        items = [t for t in TOPICS if t["area"] == area]
-        st.caption(f"{len(items)} topics · example + result")
-        for j, t in enumerate(items):
-            topic_example_card(
-                t,
-                key=f"home_{area}_{j}_{t['topic']}",
-                result=results.get((str(t["area"]), str(t["topic"]))),
-            )
-            if j < len(items) - 1:
-                st.markdown("---")
+st.dataframe(all_df[CATALOG_COLS], hide_index=True, width="stretch", height=420)

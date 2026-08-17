@@ -2,6 +2,53 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
+import pandas as pd
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+WORKED_PATH = DATA_DIR / "worked.json"
+
+
+def _key(area: str, topic: str) -> str:
+    return f"{area}||{topic}"
+
+
+def load_worked() -> dict[tuple[str, str], pd.DataFrame]:
+    """Pre-baked tables — Cloud must not fit sklearn on boot."""
+    if not WORKED_PATH.exists():
+        from clinic.store import baked_clinic
+
+        clinic = baked_clinic()
+        if clinic is None:
+            return {}
+        return worked_results(clinic)
+    payload = json.loads(WORKED_PATH.read_text(encoding="utf-8"))
+    out: dict[tuple[str, str], pd.DataFrame] = {}
+    for k, rows in payload.items():
+        area, topic = k.split("||", 1)
+        out[(area, topic)] = pd.DataFrame(rows)
+    return out
+
+
+def save_worked(results: dict[tuple[str, str], pd.DataFrame], dest: Path | None = None) -> Path:
+    dest = dest or WORKED_PATH
+    payload = {}
+    for (area, topic), df in results.items():
+        frame = df.copy()
+        if not isinstance(frame.index, pd.RangeIndex) or frame.index.name is not None:
+            frame = frame.reset_index()
+        else:
+            frame = frame.reset_index(drop=True)
+        payload[_key(str(area), str(topic))] = json.loads(
+            frame.to_json(orient="records", date_format="iso")
+        )
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(payload), encoding="utf-8")
+    return dest
+
+
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import timedelta
@@ -10,15 +57,8 @@ from itertools import islice, product
 from typing import Callable, Literal
 
 import numpy as np
-import pandas as pd
-from sklearn.linear_model import LinearRegression, Ridge
-from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 from clinic.data import Clinic
-from clinic.ml import daily_model_frame, encounter_model_frame, time_split
 
 
 def _df(rows: list[dict]) -> pd.DataFrame:
@@ -27,6 +67,13 @@ def _df(rows: list[dict]) -> pd.DataFrame:
 
 def worked_results(clinic: Clinic) -> dict[tuple[str, str], pd.DataFrame]:
     """(area, topic) → small result frame computed on this clinic."""
+    from sklearn.linear_model import LinearRegression, Ridge
+    from sklearn.metrics import mean_absolute_error, r2_score
+    from sklearn.model_selection import train_test_split
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    from clinic.ml import daily_model_frame, encounter_model_frame, time_split
     enc = clinic.encounters
     atlas = clinic.atlas
     patients = clinic.patients

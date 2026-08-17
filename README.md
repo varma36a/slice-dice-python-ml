@@ -210,4 +210,9 @@ No LLM is required to learn the architecture. Swap `plan()` for a model that emi
 
 Hosted at [https://agenticdoctorv2.streamlit.app/](https://agenticdoctorv2.streamlit.app/) from `main` / `app.py`. Updates on every `git push`.
 
-If Community Cloud is on Python 3.14, do not pin old NumPy/PyArrow — those have no 3.14 wheels and the app stays in the oven compiling from source. Optionally set **Python 3.12** in the app’s Advanced settings.
+If Community Cloud is on Python 3.14:
+
+- Set **Python 3.12** in the app’s **Advanced settings**, then **Reboot**. `runtime.txt` is ignored.
+- Do not pin old NumPy/PyArrow (no 3.14 wheels → oven hang compiling from source).
+- `requirements.txt` needs `streamlit>=1.61.1` (1.61.0 + Starlette on 3.14 crashes before the app starts).
+- Logs that stop at “Spinning up manager process…” are still installing the environment; wait for pip, or reboot after the Python version change.
