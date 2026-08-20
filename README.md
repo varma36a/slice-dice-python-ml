@@ -46,6 +46,8 @@ The full catalog lives **on the site**: home (module tabs with **example + resul
 
 Each topic is the same shape as the .NET interview map: **Topic · Concept · Example · Where**, plus a question you should answer out loud.
 
+**Explain with examples** (same style as `acuity_weight`): English first, numbered calls with real numbers, a small ASCII picture, then **what it is not**. Every catalog topic has one in `clinic/walkthroughs.py`. Open the expander on **All Topics** cards, or **Explain with examples** at the top of each lab page (Python tabs, NumPy through Capstone).
+
 | Area | Topics |
 |---|---|
 | Python | types, collections, strings/numbers, control flow, functions, comprehensions, OOP, exceptions, files/JSON, datetime, collections, generators, itertools, typing, decorators, context managers |

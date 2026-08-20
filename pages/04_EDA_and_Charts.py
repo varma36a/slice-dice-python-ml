@@ -4,6 +4,7 @@ import plotly.express as px
 import seaborn as sns
 import streamlit as st
 
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -19,6 +20,7 @@ header(
 )
 warn("Synthetic. Do not treat these curves as epidemiology.")
 why("A residual plot or an admit heatmap will change your feature list faster than another estimator.")
+module_explainers("EDA")
 
 st.markdown("### Census is not flat")
 fig = px.line(daily, x="date", y="encounters", color="site", title="Encounters per site-day")

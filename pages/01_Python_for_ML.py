@@ -18,6 +18,7 @@ import streamlit as st
 
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
+from clinic.walkthroughs import explain as walkthrough
 
 inject()
 clinic = load_clinic()
@@ -33,10 +34,17 @@ CASES = (
 )
 CASES["ts"] = pd.to_datetime(CASES["ts"])
 
+
+def show_walk(*topics: str, open_first: bool = False) -> None:
+    for i, name in enumerate(topics):
+        with st.expander(f"Explain with examples · {name}", expanded=open_first and i == 0):
+            st.markdown(walkthrough("Python", name))
+
+
 header(
     "Module 01 · Python (all topics)",
     "Python on the encounter chart",
-    "Types through typing — each tab computed from the same 12 opening-day encounters plus the condition atlas.",
+    "Types through typing — each tab: walkthrough (numbered calls, same style as acuity_weight), then the live table.",
 )
 warn("Synthetic educational data. Not medical advice.")
 why("sklearn wants numeric arrays. The glue — records, maps, generators, JSON payloads — is still Python. Agents are just that glue with a loop.")
@@ -68,6 +76,7 @@ tabs = st.tabs(
 )
 
 with tabs[0]:
+    show_walk("Scalar types")
     row = CASES.iloc[0]
     st.dataframe(
         pd.DataFrame(
@@ -86,6 +95,7 @@ with tabs[0]:
     pitfall("`False`, `0`, `[]`, `None` are all falsy. A missing troponin is not a negative troponin.")
 
 with tabs[1]:
+    show_walk("Collections")
     names = atlas["condition"].tolist()
     los = dict(zip(atlas["condition"], atlas["typical_los_h"]))
     resp = set(atlas.loc[atlas.respiratory, "condition"])
@@ -114,6 +124,7 @@ with tabs[1]:
     )
 
 with tabs[2]:
+    show_walk("Strings & numbers")
     rows = []
     for r in CASES.itertuples(index=False):
         sku = f"{str(r.condition)[:3].upper()}-E{int(r.esi)}-{str(r.arrival)[:3].upper()}"
@@ -140,6 +151,7 @@ with tabs[2]:
     )
 
 with tabs[3]:
+    show_walk("Control flow")
     def bucket(esi: int, spo2: float, arrival: str) -> str:
         if spo2 < 92 or esi == 1:
             return "resusc"
@@ -155,6 +167,19 @@ with tabs[3]:
         for e, s, a in zip(classified["esi"], classified["spo2"], classified["arrival"])
     ]
     st.dataframe(classified[["encounter_id", "condition", "esi", "spo2", "arrival", "bucket"]], hide_index=True, width="stretch")
+    st.markdown("**Trace the call** (same examples as the writeup)")
+    st.dataframe(
+        pd.DataFrame(
+            [
+                {"call": 'bucket(3, 88, "walk_in")', "first_true": "spo2 < 92", "result": bucket(3, 88.0, "walk_in")},
+                {"call": 'bucket(2, 98, "walk_in")', "first_true": "esi == 2", "result": bucket(2, 98.0, "walk_in")},
+                {"call": 'bucket(5, 99, "walk_in")', "first_true": "esi >= 4", "result": bucket(5, 99.0, "walk_in")},
+                {"call": 'bucket(3, 98, "walk_in")', "first_true": "else", "result": bucket(3, 98.0, "walk_in")},
+            ]
+        ),
+        hide_index=True,
+        width="stretch",
+    )
     st.dataframe(classified["bucket"].value_counts().rename_axis("bucket").reset_index(name="n"), hide_index=True)
     st.code(
         """def bucket(esi, spo2, arrival):
@@ -171,6 +196,7 @@ with tabs[3]:
     )
 
 with tabs[4]:
+    show_walk("Functions", open_first=True)
     def acuity_weight(esi: int, *bumps: float) -> float:
         base = {1: 1.0, 2: 0.8, 3: 0.45, 4: 0.2, 5: 0.1}[esi]
         return min(1.0, base + sum(bumps))
@@ -183,9 +209,23 @@ with tabs[4]:
     w = acuity_weight(int(esi), 0.25 if hypoxia else 0.0)
     q = wait_quote(18.0, int(esi), flu=4.0 if st.checkbox("Flu wave +4 min") else 0.0)
     st.dataframe(pd.DataFrame([{"esi": esi, "acuity_weight": w, "quoted_wait": q}]), hide_index=True)
+    st.markdown("**Trace the call** (same examples as the writeup)")
+    st.dataframe(
+        pd.DataFrame(
+            [
+                {"call": "acuity_weight(3)", "bumps": "()", "result": acuity_weight(3)},
+                {"call": "acuity_weight(3, 0.25)", "bumps": "(0.25,)", "result": acuity_weight(3, 0.25)},
+                {"call": "acuity_weight(3, 0.25, 0.10)", "bumps": "(0.25, 0.10)", "result": acuity_weight(3, 0.25, 0.10)},
+                {"call": "acuity_weight(1, 0.25)", "bumps": "(0.25,)", "result": acuity_weight(1, 0.25)},
+            ]
+        ),
+        hide_index=True,
+        width="stretch",
+    )
     pitfall("`def f(flags=[])` mutates across calls. Agents will leak state. Use `None` or `default_factory`.")
 
 with tabs[5]:
+    show_walk("Comprehensions")
     los_map = {c: lo for c, lo in zip(atlas["condition"], atlas["typical_los_h"])}
     high_admit = [c for c, a in zip(atlas["condition"], atlas["admit_base"]) if a >= 0.25]
     st.dataframe(
@@ -198,6 +238,7 @@ with tabs[5]:
     st.dataframe(pd.DataFrame({"unpack": ["first", "middle*", "last"], "value": [a, ", ".join(mid), z]}), hide_index=True)
 
 with tabs[6]:
+    show_walk("OOP")
     @dataclass
     class Encounter:
         condition: str
@@ -238,6 +279,7 @@ with tabs[6]:
     ok("Dataclass = chart row. A class with methods = tiny agent state. sklearn estimators are classes with fit/predict.")
 
 with tabs[7]:
+    show_walk("Exceptions", "Files & JSON")
     def parse_esi(raw: str) -> int:
         allowed = {"1", "2", "3", "4", "5"}
         if raw not in allowed:
@@ -265,6 +307,7 @@ with tabs[7]:
     st.caption(f"pathlib: `{Path('data') / 'encounters.csv'}` — this lab generates data in memory.")
 
 with tabs[8]:
+    show_walk("Datetime")
     ts = CASES.copy()
     ts["hour"] = ts["ts"].dt.hour
     ts["dow"] = ts["ts"].dt.day_name()
@@ -282,6 +325,7 @@ with tabs[8]:
     )
 
 with tabs[9]:
+    show_walk("collections")
     c = Counter(CASES["condition"].astype(str).tolist())
     st.dataframe(pd.DataFrame(c.most_common(), columns=["condition", "n"]), hide_index=True)
     by_site: dict[str, list[float]] = defaultdict(list)
@@ -299,6 +343,7 @@ with tabs[9]:
     st.dataframe(pd.DataFrame({"last_5": list(q)}), hide_index=True)
 
 with tabs[10]:
+    show_walk("Generators", "itertools")
     def stream_wait(frame: pd.DataFrame, site: str) -> Iterable[float]:
         for r in frame.itertuples(index=False):
             if r.site == site:
@@ -314,6 +359,7 @@ with tabs[10]:
     st.caption(f"{len(grid)} cells — same explosion OneHotEncoder will create. Agents that enumerate differentials hit this too.")
 
 with tabs[11]:
+    show_walk("Typing", "Decorators", "Context managers")
     Arrival = Literal["walk_in", "ambulance", "referral"]
 
     def timed(fn: Callable) -> Callable:

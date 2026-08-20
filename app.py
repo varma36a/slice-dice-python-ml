@@ -93,6 +93,7 @@ st.markdown("---")
 st.markdown("### All topics covered on this site")
 st.markdown(
     "Index below. **Full example + result for every topic:** sidebar **All Topics → By module**. "
+    "Each card has **Explain with examples** (same walkthrough style as `acuity_weight`). "
     "Interview drill: **Interview questions**."
 )
 all_df = catalog_frame()

@@ -15,6 +15,7 @@ from sklearn.metrics import (
 from sklearn.pipeline import Pipeline
 
 from clinic.ml import admit_transformer, encounter_model_frame, time_split
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -29,6 +30,7 @@ header(
 )
 warn("Synthetic labels. Not a real admit predictor. Not for clinical use.")
 why("Admit is the minority class. A dummy 'always discharge' model looks accurate and is useless. Threshold is a bed constraint.")
+module_explainers("Classification")
 
 cols = ["age", "esi_n", "hour", "spo2", "hr", "temp_c", "sbp", "wbc", "lactate_f", "troponin_f", "rush", "site", "arrival", "season"]
 tr, te = time_split(df, "date", 0.75)

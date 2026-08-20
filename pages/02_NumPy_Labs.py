@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -17,6 +18,7 @@ header(
 )
 warn("Synthetic lab means and costs. Not a real assay menu.")
 why("Every clinical score (qSOFA, NEWS2-style) is linear algebra plus thresholds. Agents that 'flag labs' are NumPy masks behind a tool name.")
+module_explainers("NumPy")
 
 c1, c2, c3 = st.columns(3)
 c1.metric("lab_means", f"{clinic.lab_means.shape[0]} × {clinic.lab_means.shape[1]}")

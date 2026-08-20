@@ -20,6 +20,7 @@ from clinic.ml import (
     patient_feature_frame,
     time_split,
 )
+from clinic.cards import module_explainers
 from clinic.ui import header, inject, load_clinic, ok, warn, why
 
 inject()
@@ -32,6 +33,7 @@ header(
 )
 warn("Synthetic clinic. Not for operations or care.")
 why("A real system is a decision: who to see next, which assay to run, whether to escalate. The math is NumPy + Pandas + a Pipeline + a tool loop.")
+module_explainers("Capstone")
 
 admit_cols = [
     "age", "esi_n", "hour", "spo2", "hr", "temp_c", "sbp", "wbc",

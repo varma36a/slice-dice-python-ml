@@ -19,7 +19,8 @@ warn("Synthetic educational data. Not medical advice.")
 
 st.markdown(
     """
-**By module** below is the full catalog: concept, example code, live result, interview question.
+**By module** below is the full catalog: concept, example code with numbered call traces, live result, interview question.
+Open **Explain with examples** on any card — same walkthrough style as `acuity_weight` (English, numbered calls, picture, what it is not).
 Drill mode (flashcards / multiple choice) is **Interview questions** in the sidebar.
 """
 )

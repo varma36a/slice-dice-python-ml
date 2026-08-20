@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 
 from clinic.agent import build_tools, run_agent
 from clinic.ml import admit_transformer, encounter_model_frame, time_split
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -25,6 +26,7 @@ why(
     "Production 'AI doctors' fail at tool design, state, and stop conditions — not at picking GPT vs Llama. "
     "If you can write this loop, swapping in an LLM planner later is a one-function change."
 )
+module_explainers("Agent")
 
 st.markdown("### Architecture")
 st.code(

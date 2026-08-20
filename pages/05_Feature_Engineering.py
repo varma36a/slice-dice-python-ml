@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 
 from clinic.ml import daily_model_frame, time_split
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -22,6 +23,7 @@ header(
 )
 warn("Synthetic census. Same-day admit_rate as a 'feature' is the illegal demo.")
 why("Random row splits on time-series census leak tomorrow into today. Target encoding without CV leaks the label.")
+module_explainers("Features")
 
 st.markdown("### What we already built (site-day)")
 st.dataframe(feat.head(8), hide_index=True, width="stretch")

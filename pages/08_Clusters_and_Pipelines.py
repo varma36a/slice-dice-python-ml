@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from clinic.ml import daily_model_frame, patient_feature_frame, time_split
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -24,6 +25,7 @@ header(
 )
 warn("Clusters are unsupervised stories, not diagnoses.")
 why("A Pipeline is the difference between a notebook and `joblib.dump`. The agent loads one object, not five pickle files that disagree.")
+module_explainers("Clusters & pipelines")
 
 st.markdown("### Patient features")
 pat = patient_feature_frame(clinic)

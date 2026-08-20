@@ -8,6 +8,7 @@ from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_err
 from sklearn.pipeline import Pipeline
 
 from clinic.ml import daily_model_frame, daily_transformer, time_split
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -22,6 +23,7 @@ header(
 )
 warn("Synthetic census. Not a staffing product.")
 why("Census is a regression with a time axis. You ship the model that beats last week's Tuesday, not the prettiest training curve.")
+module_explainers("Regression")
 
 y_col = "encounters"
 cols = ["site", "season", "dow", "is_weekend", "flu_wave", "is_heat", "enc_lag7", "enc_roll7"]

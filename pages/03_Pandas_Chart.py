@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from clinic.cards import module_explainers
 from clinic.quiz import ask
 from clinic.ui import header, inject, load_clinic, ok, pitfall, warn, why
 
@@ -16,6 +17,7 @@ header(
 )
 warn("Synthetic charts. Missing lactate/troponin are planted so you practice imputation — not real lab ops.")
 why("Models fail from silent row loss and leakage in joins. Agents that `get_chart` are doing a filtered loc.")
+module_explainers("Pandas")
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("rows", f"{len(enc):,}")

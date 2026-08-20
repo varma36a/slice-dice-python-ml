@@ -27,6 +27,10 @@ def topic_example_card(
     st.markdown(f"**{t['topic']}**")
     st.caption(str(t["where"]))
     st.markdown(str(t["what"]))
+    expl = str(t.get("explain") or "").strip()
+    if expl:
+        with st.expander("Explain with examples (same style as acuity_weight)", expanded=False):
+            st.markdown(expl)
     st.markdown("**Example**")
     st.code(str(t["example"]), language="python")
     if result is not None and len(result):
@@ -70,3 +74,20 @@ def render_by_module(
                 )
                 if j < len(items) - 1:
                     st.markdown("---")
+
+
+def module_explainers(area: str, *, expanded: bool = False) -> None:
+    """Lab pages: every topic in this module with the worked-example writeup."""
+    from clinic.topics import TOPICS
+
+    items = [t for t in TOPICS if t["area"] == area]
+    if not items:
+        return
+    st.markdown("### Explain with examples")
+    st.caption("Same walkthrough style as `acuity_weight`: English, numbered calls, what it is not.")
+    for t in items:
+        with st.expander(f"{t['topic']}", expanded=expanded):
+            expl = str(t.get("explain") or "").strip()
+            if expl:
+                st.markdown(expl)
+            st.code(str(t["example"]), language="python")
